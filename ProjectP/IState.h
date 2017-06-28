@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Button.h"
 #include "Player.h"
+#include "Action.h"
 #include "Entity.h"
 #include <string>
 #include <iostream>
@@ -556,7 +557,7 @@ public:
 class BattleState : public IState
 {
 private:
-	//std::list<Action> mActions = std::list<Action>();
+	std::list<Action> mActions;
 	std::vector<Entity*> mEntities;
 	PlayerEntity* playerEnt1;
 	PlayerEntity* playerEnt2;
@@ -576,7 +577,7 @@ private:
 
 public:
 	BattleState() {
-		//mActions = std::list<Action>();
+		mActions = std::list<Action>();
 		mEntities = std::vector<Entity*>();
 		playerEnt1 = new PlayerEntity();
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
@@ -685,7 +686,7 @@ public:
 	
 	void resize(double mult) {
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
-			std::cout << "Resizing menu buttons\n";
+			std::cout << "Resizing battle buttons\n";
 			buttonList[i]->resize(mult);
 		}
 	}

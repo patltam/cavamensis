@@ -5,8 +5,7 @@
 #include <SFML/Graphics.hpp>
 #pragma once
 
-class Entity
-{
+class Entity {
 public:
 	sf::Texture sheet;
 	sf::Sprite sprites;
