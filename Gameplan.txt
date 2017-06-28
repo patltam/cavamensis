@@ -1,0 +1,72 @@
+2D sidescroller/platforming
+Enemies on screen, enter battle on contact
+vvv Think EBF vvv
+Optional battles are random spawning, free-roaming, respawns
+Required battles are fixed in place, do not respawn
+^^^ Think EBF ^^^
+Turn-based battle
+Up to 4 players vs. up to 5 enemies
+Front row (more attack, less defense) and back row (opposite)
+EXP to level up, gain stats
+Battles give EXP, skill points, items
+
+Stats:
+HP
+MP
+Attack
+Magic Attack
+Defense
+Magic Defense
+Speed (turns in battle, avoidability)
+
+Limit breaks: Special skills activated by conditions reset per battle
+
+Locations:
+Summerwood
+Ruins with broken bridge walkway, green, mountain area
+San Vernos - Rainy nighttime steampunk city
+Winterdawn - Dawn glacier port
+Ventera - Humble port city - Slightly cloudy morning
+Divus - Rich port city - Bright noon
+Candela - Nighttime fireworks port city with glowy water/trees nighttime beach
+Sunset Muir - Dark oak, turquoise leaves, orange horizon to blue sky)
+Foggy/misty area with mysterious pulsing colored lights in distance
+Mining town
+Pirate hideout - Cave?
+Futuristic utopia - Bright, greens
+Temanaire - Shaded area, vines
+Refreshing pines + lake, flower hills
+Malfunctioning flashing green screens
+
+Protagonists:
+F Pirate - Ayn, Ayvery - Determined, understanding
+M Thief - Flirty, serious when needed
+F Ninja/Samurai - Serious
+M Engineer (Optional?)
+F Archer - Lily - Petite frame, oversized clothing
+M Spearman - Fisher, harpoon
+F Bard
+M Berserker?
+F Witch? (Optional?)
+M Sniper?
+
+Antagonists
+F Summoner
+
+Plot ideas:
+Game opens on Pirate's ship, introduce Pirate, Spearman, ship's captain
+Pirate's ship caught in storm, Pirate separated from crew, reunite with Spearman later in game
+Thief initially steals from Pirate, fails, apologetic/crushing on Pirate joins party
+Ayvery -> Ayvy (nickname) -> Ayv (serious nickname)
+Thief conflict with Ninja/Samurai
+Close friendship between Thief and Pirate developed throughout
+Ninja/Samurai abandons group in fear, returns to save
+Boss battle on bridge walkway
+Captain of Pirate's ship corrupted by villain, boss battle
+Engineer is parentless, works hard, initially cold towards people until Pirate's parentless past is revealed
+Villain appears and evolves throughout game, causes mass damage
+Villain marked with symbols on one arm up to neck
+Villain foretold as harbinger of destruction, originally refuses to accept
+Villain unloved by adoptive parents
+Fog/mist is plague or sign of boss monsters?
+Bard poetically closes the game
