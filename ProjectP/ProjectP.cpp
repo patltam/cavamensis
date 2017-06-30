@@ -95,7 +95,28 @@ int main()
 	gGameMode.add("mainmenu", new MainMenuState());
 	gGameMode.add("localmap", new MapState());
 	gGameMode.add("menu", new MenuState());
-	gGameMode.add("battle", new BattleState());
+	//gGameMode.add("battle", new BattleState());
+	std::vector<PlayerEntity*> playerList;
+	PlayerEntity* player1 = new PlayerEntity();
+	playerList.push_back(player1);
+	PlayerEntity* player2 = new PlayerEntity();
+	playerList.push_back(player2);
+	PlayerEntity* player3 = new PlayerEntity();
+	playerList.push_back(player3);
+	PlayerEntity* player4 = new PlayerEntity();
+	playerList.push_back(player4);
+	std::vector<MobEntity*> mobList;
+	MobEntity* mob1 = new MobEntity();
+	mobList.push_back(mob1);
+	MobEntity* mob2 = new MobEntity();
+	mobList.push_back(mob2);
+	MobEntity* mob3 = new MobEntity();
+	mobList.push_back(mob3);
+	MobEntity* mob4 = new MobEntity();
+	mobList.push_back(mob4);
+	MobEntity* mob5 = new MobEntity();
+	mobList.push_back(mob5);
+	gGameMode.add("battle", new BattleState(playerList, mobList));
 	gGameMode.push("mainmenu");
 	gGameMode.onEnter();
 
@@ -164,7 +185,7 @@ int main()
 			gGameMode.onExit();
 			switch (menu) {
 			case 0: // mainmenu
-				if (prevMenu == 2) {
+				if (prevMenu == 2) { // from menu
 					while (gGameMode.getSize() > 1) {
 						gGameMode.onExit();
 						gGameMode.pop();
@@ -179,6 +200,7 @@ int main()
 					gGameMode.onEnter();
 				}
 				else if (prevMenu == 2) { // from menu
+					gGameMode.onExit();
 					gGameMode.pop();
 					gGameMode.onEnter();
 				}
@@ -190,16 +212,20 @@ int main()
 					gGameMode.onEnter();
 				}
 				else if (prevMenu == 3) { // from battle
+					gGameMode.onExit();
 					gGameMode.pop();
 					gGameMode.onEnter();
 				}
 				break;
 
 			case 3: // battle
-				if (prevMenu == 2) { // from menu
+				if (prevMenu == 1) { // from localmap
+					mobList = gGameMode.onExitToBattle();
+					gGameMode.add("battle", new BattleState(playerList, mobList));
 					gGameMode.push("battle");
 					gGameMode.onEnter();
 				}
+				break;
 
 			default:
 				break;

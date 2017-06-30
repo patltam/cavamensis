@@ -24,10 +24,10 @@ public:
 	virtual void execute() = 0;
 };
 
-class PlayerAttack : public Action
+class MobAttack : public Action
 {
 public:
-	PlayerAttack() {
+	MobAttack() {
 
 	}
 

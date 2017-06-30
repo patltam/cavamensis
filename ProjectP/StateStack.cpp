@@ -56,6 +56,11 @@ public:
 		top->onExit();
 	}
 
+	std::vector<MobEntity*> onExitToBattle() {
+		IState* top = mStack.back();
+		return top->onExitToBattle();
+	}
+
 	int getSize() {
 		return mStack.size();
 	}

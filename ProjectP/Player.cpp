@@ -21,7 +21,7 @@ void Player::right(std::vector<int>& wm, sf::Sprite& level, int wmWidth)
 {
 	int nextX = (int)this->position.x + this->width;
 	// check for wall
-	for (int i = 1; i < this->height - 1; ++i)
+	for (int i = 0; i < this->height - 1; ++i)
 	{
 		if (wm[((int)this->position.y + i) * wmWidth + nextX] == 1)
 		{
@@ -79,7 +79,7 @@ void Player::left(std::vector<int>& wm, sf::Sprite& level, int wmWidth)
 {
 	int nextX = (int)this->position.x - 1;
 	// check for wall
-	for (int i = 1; i < this->height - 1; ++i)
+	for (int i = 0; i < this->height - 1; ++i)
 	{
 		if (wm[((int)this->position.y + i) * wmWidth + nextX] == 1)
 		{

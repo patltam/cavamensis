@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Action.h"
 #include "Entity.h"
+#include "Mob.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -19,6 +20,7 @@ public:
 	virtual void render(sf::RenderWindow* window) = 0;
 	virtual void onEnter() = 0;
 	virtual void onExit() = 0;
+	virtual std::vector<MobEntity*> onExitToBattle() = 0;
 };
 
 class EmptyState : public IState
@@ -47,6 +49,10 @@ public:
 	void onExit() {
 		// No action to take when the state is exited
 	}
+
+	std::vector<MobEntity*> onExitToBattle() {
+		// No action to take when the state is exited
+	}
 };
 
 class MainMenuState : public IState
@@ -56,6 +62,7 @@ private:
 	sf::Sprite mainMenuBG;
 	std::vector<Button*> buttonList;
 	Button* startButton;
+	std::vector<MobEntity*> mobList;
 
 public:
 	MainMenuState() {
@@ -129,11 +136,21 @@ public:
 	void onExit() {
 		mainMenuBG.setColor(sf::Color(255, 255, 255, 0));
 	}
+
+	std::vector<MobEntity*> onExitToBattle() {
+		mainMenuBG.setColor(sf::Color(255, 255, 255, 0));
+		for (unsigned int i = 0; i < buttonList.size(); ++i) {
+			buttonList[i]->setIsClicked(false);
+		}
+		return mobList;
+	}
 };
 
 class MapState : public IState
 {
 private:
+	std::vector<MobEntity*> mobList; // for setting up battles
+	std::vector<Mob*> spawnedMobList; // for mobs roaming the map
 	std::vector<Button*> buttonList;
 	Button* menuButton;
 	sf::Texture level;
@@ -157,13 +174,17 @@ public:
 		menuButton = new Button(1, 1521, 0, 79, 31, "ui/menubutton.png");
 		menuButton->setIsClickable(true);
 		buttonList.push_back(menuButton); // ID = 1
+		player = new Player(0, 0, 2, 8, "char/runs.png");
+
 		level.loadFromFile("maps/veterna.png");
 		currLevel.setTexture(level);
 		currLevel.setScale(sf::Vector2f(12, 12));
 		walkmask = readBMP("maps/veternawm.bmp"); // 24-bit BMP
 		currLevelWidth = 700;
-		player = new Player(0, 0, 2, 8, "char/runs.png");
 		spawnIn(300, 50, currLevel, level, walkmask, "maps/veternawm.bmp", player);
+		Mob0* dummy = new Mob0();
+		dummy->setPosition(sf::Vector2f(300, 50));
+		spawnedMobList.push_back(dummy);
 	}
 
 	std::vector<int> readBMP(char* filename)
@@ -409,6 +430,12 @@ public:
 				}
 			}
 		}
+
+		// mob movement
+		for (int i = 0; i < spawnedMobList.size(); ++i) {
+			spawnedMobList[i]->move(walkmask, currLevelWidth);
+		}
+
 		return 1;
 	}
 
@@ -438,6 +465,9 @@ public:
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			window->draw(buttonList[i]->getSprite());
 		}
+		for (unsigned int i = 0; i < spawnedMobList.size(); ++i) {
+			window->draw(spawnedMobList[i]->getSprite());
+		}
 	}
 
 	void onEnter()
@@ -455,6 +485,14 @@ public:
 			buttonList[i]->setIsClicked(false);
 		}
 	}
+
+	std::vector<MobEntity*> onExitToBattle() {
+		currLevel.setColor(sf::Color(255, 255, 255, 0));
+		for (unsigned int i = 0; i < buttonList.size(); ++i) {
+			buttonList[i]->setIsClicked(false);
+		}
+		return mobList;
+	}
 };
 
 class MenuState : public IState
@@ -465,6 +503,7 @@ private:
 	Button* battleButton;
 	sf::Texture menubgt;
 	sf::Sprite menubg;
+	std::vector<MobEntity*> mobList;
 
 public:
 	MenuState() {
@@ -552,12 +591,20 @@ public:
 			buttonList[i]->setIsClicked(false);
 		}
 	}
+
+	std::vector<MobEntity*> onExitToBattle() {
+		menubg.setColor(sf::Color(255, 255, 255, 0));
+		for (unsigned int i = 0; i < buttonList.size(); ++i) {
+			buttonList[i]->setIsClicked(false);
+		}
+		return mobList;
+	}
 };
 
 class BattleState : public IState
 {
 private:
-	std::list<Action> mActions;
+	std::vector<Action> mActions;
 	std::vector<Entity*> mEntities;
 	PlayerEntity* playerEnt1;
 	PlayerEntity* playerEnt2;
@@ -574,11 +621,13 @@ private:
 	sf::Sprite bg;
 	sf::Texture battleMenut;
 	sf::Sprite battleMenu;
+	std::vector<MobEntity*> mobList;
 
 public:
 	BattleState() {
-		mActions = std::list<Action>();
+		mActions = std::vector<Action>();
 		mEntities = std::vector<Entity*>();
+
 		playerEnt1 = new PlayerEntity();
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
 		playerEnt1->setPosition(sf::Vector2f(450, 298));
@@ -613,6 +662,58 @@ public:
 		mobEnt4->setPosition(sf::Vector2f(1160, 518));
 		mEntities.push_back(mobEnt4);
 		mobEnt5 = new MobEntity();
+		mobEnt5->setOrigin(sf::Vector2f(0, 100));
+		mobEnt5->setPosition(sf::Vector2f(1180, 608));
+		mEntities.push_back(mobEnt5);
+
+		backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
+		backButton->setIsClickable(true);
+		buttonList.push_back(backButton); // ID = 2
+		bgt.loadFromFile("battlebg/bg0.png");
+		bg.setTexture(bgt);
+		battleMenut.loadFromFile("ui/battlemenu.png");
+		battleMenu.setTexture(battleMenut);
+		battleMenu.setPosition(sf::Vector2f(0, 600));
+	}
+
+	BattleState(std::vector<PlayerEntity*> playerList, std::vector<MobEntity*> mobList) {
+		mActions = std::vector<Action>();
+		mEntities = std::vector<Entity*>();
+
+		playerEnt1 = playerList[0];
+		playerEnt1->setOrigin(sf::Vector2f(0, 148));
+		playerEnt1->setPosition(sf::Vector2f(450, 298));
+		mEntities.push_back(playerEnt1);
+		playerEnt2 = playerList[1];
+		playerEnt2->setOrigin(sf::Vector2f(0, 148));
+		playerEnt2->setPosition(sf::Vector2f(430, 398));
+		mEntities.push_back(playerEnt2);
+		playerEnt3 = playerList[2];
+		playerEnt3->setOrigin(sf::Vector2f(0, 148));
+		playerEnt3->setPosition(sf::Vector2f(410, 498));
+		mEntities.push_back(playerEnt3);
+		playerEnt4 = playerList[3];
+		playerEnt4->setOrigin(sf::Vector2f(0, 148));
+		playerEnt4->setPosition(sf::Vector2f(390, 598));
+		mEntities.push_back(playerEnt4);
+
+		mobEnt1 = mobList[0];
+		mobEnt1->setOrigin(sf::Vector2f(0, 100));
+		mobEnt1->setPosition(sf::Vector2f(1100, 248));
+		mEntities.push_back(mobEnt1);
+		mobEnt2 = mobList[1];
+		mobEnt2->setOrigin(sf::Vector2f(0, 100));
+		mobEnt2->setPosition(sf::Vector2f(1120, 338));
+		mEntities.push_back(mobEnt2);
+		mobEnt3 = mobList[2];
+		mobEnt3->setOrigin(sf::Vector2f(0, 100));
+		mobEnt3->setPosition(sf::Vector2f(1140, 428));
+		mEntities.push_back(mobEnt3);
+		mobEnt4 = mobList[3];
+		mobEnt4->setOrigin(sf::Vector2f(0, 100));
+		mobEnt4->setPosition(sf::Vector2f(1160, 518));
+		mEntities.push_back(mobEnt4);
+		mobEnt5 = mobList[4];
 		mobEnt5->setOrigin(sf::Vector2f(0, 100));
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
 		mEntities.push_back(mobEnt5);
@@ -728,5 +829,28 @@ public:
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			buttonList[i]->setIsClicked(false);
 		}
+	}
+
+	std::vector<MobEntity*> onExitToBattle() {
+		bg.setColor(sf::Color(255, 255, 255, 0));
+		for (unsigned int i = 0; i < buttonList.size(); ++i) {
+			buttonList[i]->setIsClicked(false);
+		}
+		return mobList;
+	}
+
+	int getActive() {
+		int counter = 0;
+		for (int i = 0; i < mEntities.size(); ++i) {
+			if (mEntities[i]->getHP() > 0) {
+				++counter;
+			}
+		}
+		return counter;
+	}
+
+	std::vector<Entity*> sortBySpeed() {
+		int counter = 0;
+
 	}
 };
