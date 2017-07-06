@@ -24,7 +24,7 @@ public:
 	Mob() {}
 	virtual ~Mob() {}
 	virtual void setOrigin(sf::Vector2f pos) = 0;
-	virtual void setPosition(sf::Vector2f pos) = 0;
+	virtual void setPosition(sf::Vector2f pos, sf::Vector2f playerPos) = 0;
 	virtual sf::Vector2f getPosition() = 0;
 	virtual sf::Sprite getSprite() = 0;
 	virtual int getWidth() = 0;
@@ -63,10 +63,10 @@ public:
 		sprites.setOrigin(pos);
 	}
 
-	void setPosition(sf::Vector2f pos) {
+	void setPosition(sf::Vector2f pos, sf::Vector2f playerPos) {
 		position.x = pos.x;
 		position.y = pos.y;
-		sprites.setPosition(pos);
+		sprites.setPosition(sf::Vector2f((pos.x - playerPos.x)*12+800,(pos.y-playerPos.y)*12+375));
 	}
 
 	sf::Vector2f getPosition() {
@@ -111,6 +111,7 @@ public:
 			else
 			{
 				this->position = sf::Vector2f(this->position.x + 1, this->position.y - 1);
+				sprites.setPosition(sf::Vector2f(sprites.getPosition().x + 12, sprites.getPosition().y - 12));
 				return;
 			}
 		}
@@ -230,10 +231,11 @@ public:
 			// stay still
 		}
 		else if (proc == 1) {
-			right(wm, wmWidth);
+			//right(wm, wmWidth);
 		}
 		else if (proc == 2) {
-			left(wm, wmWidth);
+			//left(wm, wmWidth);
 		}
+		sprites.setPosition(sf::Vector2f((position.x - playerPos.x)*12+800, (position.y - playerPos.y)*12+375));
 	}
 };

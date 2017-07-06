@@ -181,9 +181,9 @@ public:
 		currLevel.setScale(sf::Vector2f(12, 12));
 		walkmask = readBMP("maps/veternawm.bmp"); // 24-bit BMP
 		currLevelWidth = 700;
-		spawnIn(300, 50, currLevel, level, walkmask, "maps/veternawm.bmp", player);
+		spawnIn(175, 200, currLevel, level, walkmask, "maps/veternawm.bmp", player);
 		Mob0* dummy = new Mob0();
-		dummy->setPosition(sf::Vector2f(300, 50));
+		dummy->setPosition(sf::Vector2f(175, 200), player->getPosition());
 		spawnedMobList.push_back(dummy);
 	}
 
@@ -433,7 +433,7 @@ public:
 
 		// mob movement
 		for (int i = 0; i < spawnedMobList.size(); ++i) {
-			spawnedMobList[i]->move(walkmask, currLevelWidth);
+			spawnedMobList[i]->move(walkmask, currLevelWidth, player->getPosition());
 		}
 
 		return 1;
