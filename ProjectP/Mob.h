@@ -14,6 +14,10 @@ public:
 	sf::Vector2f position;
 	int width;
 	int height;
+	int hbtlx;
+	int hbtly;
+	int hbWidth;
+	int hbHeight;
 	MobEntity* mob1;
 	MobEntity* mob2;
 	MobEntity* mob3;
@@ -29,6 +33,10 @@ public:
 	virtual sf::Vector2f getPosition() = 0;
 	virtual sf::Sprite getSprite() = 0;
 	virtual int getWidth() = 0;
+	virtual int getHbtlx() = 0;
+	virtual int getHbtly() = 0;
+	virtual int getHbWidth() = 0;
+	virtual int getHbHeight() = 0;
 	virtual std::vector<MobEntity*> getMobList() = 0;
 	virtual void setSpriteStage(int value) = 0;
 	virtual void right(std::vector<int>& wm, int wmWidth) = 0;
@@ -48,6 +56,10 @@ public:
 		position.y = 0;
 		width = 2;
 		height = 6;
+		hbtlx = 8;
+		hbtly = 8;
+		hbWidth = 46;
+		hbHeight = 86;
 		mob1 = new MobEntity();
 		mob2 = new MobEntity();
 		mob3 = new MobEntity();
@@ -68,11 +80,27 @@ public:
 	void setPosition(sf::Vector2f pos, sf::Vector2f playerPos) {
 		position.x = pos.x;
 		position.y = pos.y;
-		sprites.setPosition(sf::Vector2f((pos.x - playerPos.x)*12+800,(pos.y-playerPos.y)*12+375));
+		sprites.setPosition(sf::Vector2f((pos.x - playerPos.x) * 12 + 800, (pos.y - playerPos.y) * 12 + 375));
 	}
 
 	sf::Vector2f getPosition() {
 		return position;
+	}
+
+	int getHbtlx() {
+		return hbtlx;
+	}
+
+	int getHbtly() {
+		return hbtly;
+	}
+
+	int getHbWidth() {
+		return hbWidth;
+	}
+
+	int getHbHeight() {
+		return hbHeight;
 	}
 
 	sf::Sprite getSprite() {

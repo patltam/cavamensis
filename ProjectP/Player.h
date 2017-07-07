@@ -10,7 +10,11 @@ class Player
 private:
 	int width;
 	int height;
-	sf::Vector2f position; // x12 walkmask vector top left position
+	int hbtlx;
+	int hbtly;
+	int hbWidth;
+	int hbHeight;
+	sf::Vector2f position; // walkmask top left position
 	sf::Texture sheet;
 	sf::Sprite sprites;
 
@@ -22,6 +26,10 @@ public:
 	void jump(std::vector<int>& wm, sf::Sprite& level, int wmWidth);
 	bool down(std::vector<int>& wm, sf::Sprite& level, int wmWidth);
 	int getWidth();
+	int getHbtlx();
+	int getHbtly();
+	int getHbWidth();
+	int getHbHeight();
 	void setPosition(sf::Vector2f pos);
 	sf::Vector2f getPosition();
 	sf::Sprite getSprite();

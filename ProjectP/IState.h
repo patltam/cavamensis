@@ -164,6 +164,20 @@ private:
 	bool isFall;
 	int fallFrame;
 	bool lastRight;
+	int playerHbLeft;
+	int playerHbRight;
+	int playerHbTop;
+	int playerHbBottom;
+	int playerHbWidth;
+	int playerHbHeight;
+	bool collideX1;
+	bool collideX2;
+	bool collideX3;
+	bool collideX4;
+	bool collideY1;
+	bool collideY2;
+	bool collideY3;
+	bool collideY4;
 
 public:
 	MapState() {
@@ -418,7 +432,54 @@ public:
 				++fallFrame;
 			}
 		}
-		std::cout << jumpCD << "\n";
+
+		// check for mob collision
+		playerHbLeft = player->getSprite().getPosition().x + player->getHbtlx();
+		playerHbWidth = player->getHbWidth();
+		playerHbRight = playerHbLeft + playerHbWidth;
+		playerHbTop = player->getSprite().getPosition().y + player->getHbtly();
+		playerHbHeight = player->getHbHeight();
+		playerHbBottom = playerHbTop + playerHbHeight;
+		for (unsigned int i = 0; i < spawnedMobList.size(); ++i) {
+			collideX1 = playerHbLeft >
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() &&
+				playerHbLeft <
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() + spawnedMobList[i]->getHbWidth();
+			collideX2 = playerHbRight >
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() &&
+				playerHbRight <
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() + spawnedMobList[i]->getHbWidth();
+			collideX3 = spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() >
+				playerHbLeft &&
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() <
+				playerHbRight;
+			collideX4 = spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() + spawnedMobList[i]->getHbWidth() >
+				playerHbLeft &&
+				spawnedMobList[i]->getSprite().getPosition().x + spawnedMobList[i]->getHbtlx() + spawnedMobList[i]->getHbWidth() <
+				playerHbRight;
+			collideY1 = playerHbTop >
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() &&
+				playerHbTop <
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() + spawnedMobList[i]->getHbHeight();
+			collideY2 = playerHbBottom >
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() &&
+				playerHbBottom <
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() + spawnedMobList[i]->getHbHeight();
+			collideY3 = spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() >
+				playerHbTop &&
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() <
+				playerHbBottom;
+			collideY4 = spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() + spawnedMobList[i]->getHbHeight() >
+				playerHbTop &&
+				spawnedMobList[i]->getSprite().getPosition().y + spawnedMobList[i]->getHbtly() + spawnedMobList[i]->getHbHeight() <
+				playerHbBottom;
+			if (collideX1 || collideX2 || collideX3 || collideX4) {
+				if (collideY1 || collideY2 || collideY3 || collideY4) {
+					std::cout << "Collision!\n";
+				}
+			}
+		}
+
 		// check for mouse over button
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			if (buttonList[i]->getIsClickable() && buttonList[i]->testIsClicked(mousePosition.x, mousePosition.y)) {
@@ -445,7 +506,7 @@ public:
 		}
 
 		// mob movement
-		for (int i = 0; i < spawnedMobList.size(); ++i) {
+		for (unsigned int i = 0; i < spawnedMobList.size(); ++i) {
 			spawnedMobList[i]->move(walkmask, currLevelWidth, player->getPosition());
 		}
 
@@ -854,7 +915,7 @@ public:
 
 	int getActive() {
 		int counter = 0;
-		for (int i = 0; i < mEntities.size(); ++i) {
+		for (unsigned int i = 0; i < mEntities.size(); ++i) {
 			if (mEntities[i]->getHP() > 0) {
 				++counter;
 			}

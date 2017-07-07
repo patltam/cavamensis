@@ -6,6 +6,10 @@ Player::Player(int x, int y, int w, int h, std::string path)
 	position = sf::Vector2f((float)x, (float)y);
 	width = w;
 	height = h;
+	hbtlx = 44;
+	hbtly = 12;
+	hbWidth = 24;
+	hbHeight = 120;
 	sheet.loadFromFile(path);
 	sprites.setTexture(sheet);
 	sprites.setTextureRect(sf::IntRect(0, 0, 102, 146));
@@ -175,6 +179,22 @@ void Player::setPosition(sf::Vector2f pos)
 sf::Vector2f Player::getPosition()
 {
 	return this->position;
+}
+
+int Player::getHbtlx() {
+	return this->hbtlx;
+}
+
+int Player::getHbtly() {
+	return this->hbtly;
+}
+
+int Player::getHbWidth() {
+	return this->hbWidth;
+}
+
+int Player::getHbHeight() {
+	return this->hbHeight;
 }
 
 sf::Sprite Player::getSprite()
