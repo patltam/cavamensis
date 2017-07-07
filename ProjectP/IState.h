@@ -159,6 +159,7 @@ private:
 	int currLevelWidth;
 	Player* player;
 	bool isJump;
+	int jumpCD;
 	int jumpFrame;
 	bool isFall;
 	int fallFrame;
@@ -167,6 +168,7 @@ private:
 public:
 	MapState() {
 		isJump = false;
+		jumpCD = -1;
 		jumpFrame = 0;
 		isFall = false;
 		fallFrame = 0;
@@ -235,7 +237,7 @@ public:
 	{
 		currLevel.setTexture(level);
 		currLevel.move((float)(-(x * 12 - 810)), (float)(-(y * 12 - 375)));
-		//walkmask = readBMP(path);
+		walkmask = readBMP(path);
 		player->setPosition(sf::Vector2f((float)x, (float)y));
 	}
 
@@ -291,7 +293,7 @@ public:
 				player->setSpriteStage(4);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-				sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
+				sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall && (jumpCD == -1))
 			{
 				if (!isJump)
 				{
@@ -336,7 +338,7 @@ public:
 				player->setSpriteStage(8);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-				sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
+				sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall && (jumpCD == -1))
 			{
 				if (!isJump)
 				{
@@ -345,11 +347,11 @@ public:
 			}
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-			sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
+			sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall && (jumpCD == -1))
 		{
 			if (!isJump && !isFall)
 			{
-				isJump = true;
+					isJump = true;
 			}
 		}
 
@@ -383,11 +385,18 @@ public:
 				isJump = false;
 				isFall = player->down(walkmask, currLevel, currLevelWidth);
 				jumpFrame = 0;
+				jumpCD = 0;
 			}
 		}
 		if (!isFall)
 		{
 			fallFrame = 0;
+			if (jumpCD != -1) {
+				++jumpCD;
+			}
+			if (jumpCD >= 5) {
+				jumpCD = -1;
+			}
 		}
 		if (isFall)
 		{
@@ -400,12 +409,16 @@ public:
 			if (fallFrame > 8)
 			{
 				isFall = player->down(walkmask, currLevel, currLevelWidth);
+				if (!isFall) {
+					jumpCD = 0;
+				}
 			}
 			else
 			{
 				++fallFrame;
 			}
 		}
+		std::cout << jumpCD << "\n";
 		// check for mouse over button
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			if (buttonList[i]->getIsClickable() && buttonList[i]->testIsClicked(mousePosition.x, mousePosition.y)) {
@@ -460,13 +473,13 @@ public:
 	void render(sf::RenderWindow* window)
 	{
 		window->draw(currLevel);
-		window->draw(player->getSprite());
 		//std::cout << player->getPosition().x << ", " << player->getPosition().y << "\n";
-		for (unsigned int i = 0; i < buttonList.size(); ++i) {
-			window->draw(buttonList[i]->getSprite());
-		}
 		for (unsigned int i = 0; i < spawnedMobList.size(); ++i) {
 			window->draw(spawnedMobList[i]->getSprite());
+		}
+		window->draw(player->getSprite());
+		for (unsigned int i = 0; i < buttonList.size(); ++i) {
+			window->draw(buttonList[i]->getSprite());
 		}
 	}
 

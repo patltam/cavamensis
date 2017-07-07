@@ -20,6 +20,7 @@ public:
 	MobEntity* mob4;
 	MobEntity* mob5;
 	std::vector<MobEntity*> mobList;
+	int timer;
 
 	Mob() {}
 	virtual ~Mob() {}
@@ -45,8 +46,8 @@ public:
 		sprites.setTexture(sheet);
 		position.x = 0;
 		position.y = 0;
-		width = 1;
-		height = 1;
+		width = 2;
+		height = 6;
 		mob1 = new MobEntity();
 		mob2 = new MobEntity();
 		mob3 = new MobEntity();
@@ -57,6 +58,7 @@ public:
 		mobList.push_back(mob3);
 		mobList.push_back(mob4);
 		mobList.push_back(mob5);
+		timer = 0;
 	}
 
 	void setOrigin(sf::Vector2f pos) {
@@ -111,7 +113,6 @@ public:
 			else
 			{
 				this->position = sf::Vector2f(this->position.x + 1, this->position.y - 1);
-				sprites.setPosition(sf::Vector2f(sprites.getPosition().x + 12, sprites.getPosition().y - 12));
 				return;
 			}
 		}
@@ -135,6 +136,7 @@ public:
 				if (wm[((int)this->position.y + this->height) * wmWidth + nextX - 1] == 0)
 				{
 					this->position = sf::Vector2f(this->position.x + 1, this->position.y + 1);
+					sprites.setPosition(sf::Vector2f(sprites.getPosition().x + 12, sprites.getPosition().y + 12));
 					return;
 				}
 			}
@@ -188,6 +190,7 @@ public:
 				if (wm[((int)this->position.y + this->height) * wmWidth + nextX - 1] == 0)
 				{
 					this->position = sf::Vector2f(this->position.x - 1, this->position.y + 1);
+					sprites.setPosition(sf::Vector2f(sprites.getPosition().x - 12, sprites.getPosition().y + 12));
 					return;
 				}
 			}
@@ -226,16 +229,23 @@ public:
 
 	void move(std::vector<int>& wm, int wmWidth, sf::Vector2f playerPos) {
 		srand((int)time(NULL));
-		int proc = rand() % 3;
-		if (proc == 0) {
-			// stay still
+		if (timer == 1) {
+			int proc = rand() % 3;
+			if (proc == 0) {
+				// stay still
+			}
+			else if (proc == 1) {
+				//right(wm, wmWidth);
+			}
+			else if (proc == 2) {
+				//left(wm, wmWidth);
+			}
+			timer = 0;
 		}
-		else if (proc == 1) {
-			//right(wm, wmWidth);
+		else {
+			timer = 1;
 		}
-		else if (proc == 2) {
-			//left(wm, wmWidth);
-		}
+		down(wm, wmWidth);
 		sprites.setPosition(sf::Vector2f((position.x - playerPos.x)*12+800, (position.y - playerPos.y)*12+375));
 	}
 };
