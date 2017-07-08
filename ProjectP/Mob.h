@@ -25,6 +25,7 @@ public:
 	MobEntity* mob5;
 	std::vector<MobEntity*> mobList;
 	int timer;
+	int proc;
 
 	Mob() {}
 	virtual ~Mob() {}
@@ -57,7 +58,7 @@ public:
 		width = 2;
 		height = 6;
 		hbtlx = 8;
-		hbtly = 8;
+		hbtly = 30;
 		hbWidth = 46;
 		hbHeight = 86;
 		mob1 = new MobEntity();
@@ -71,6 +72,7 @@ public:
 		mobList.push_back(mob4);
 		mobList.push_back(mob5);
 		timer = 0;
+		proc = -1;
 	}
 
 	void setOrigin(sf::Vector2f pos) {
@@ -258,22 +260,32 @@ public:
 	void move(std::vector<int>& wm, int wmWidth, sf::Vector2f playerPos) {
 		srand((int)time(NULL));
 		if (timer == 1) {
-			int proc = rand() % 3;
 			if (proc == 0) {
 				// stay still
 			}
 			else if (proc == 1) {
-				//right(wm, wmWidth);
+				right(wm, wmWidth);
 			}
 			else if (proc == 2) {
-				//left(wm, wmWidth);
+				left(wm, wmWidth);
 			}
 			timer = 0;
 		}
 		else {
 			timer = 1;
+			proc = rand() % 3;
+			if (proc == 0) {
+				sprites.setPosition(sf::Vector2f((position.x - playerPos.x) * 12 + 800, (position.y - playerPos.y) * 12 + 375));
+			}
+			else if (proc == 1) {
+				sprites.setPosition(sf::Vector2f((position.x + 0.5 - playerPos.x) * 12 + 800, (position.y - playerPos.y) * 12 + 375));
+			}
+			else if (proc == 2) {
+				sprites.setPosition(sf::Vector2f((position.x - 0.5 - playerPos.x) * 12 + 800, (position.y - playerPos.y) * 12 + 375));
+			}
+			return;
 		}
 		down(wm, wmWidth);
-		sprites.setPosition(sf::Vector2f((position.x - playerPos.x)*12+800, (position.y - playerPos.y)*12+375));
+		sprites.setPosition(sf::Vector2f((position.x - playerPos.x) * 12 + 800, (position.y - playerPos.y) * 12 + 375));
 	}
 };
