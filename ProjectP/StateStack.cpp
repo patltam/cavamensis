@@ -35,6 +35,10 @@ public:
 		mStates.insert(std::pair<std::string, IState*>(name, state));
 	}
 
+	void remove(std::string name) {
+		mStates.erase(name);
+	}
+
 	void push(std::string name) {
 		IState* state = mStates[name];
 		mStack.push_back(state);

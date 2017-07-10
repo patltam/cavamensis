@@ -95,55 +95,29 @@ int main()
 	gGameMode.add("mainmenu", new MainMenuState());
 	gGameMode.add("localmap", new MapState());
 	gGameMode.add("menu", new MenuState());
-	//gGameMode.add("battle", new BattleState());
 	std::vector<PlayerEntity*> playerList;
-	PlayerEntity* player1 = new PlayerEntity();
+	PlayerEntity* player1 = new PlayerEntity(-1);
 	playerList.push_back(player1);
-	PlayerEntity* player2 = new PlayerEntity();
+	PlayerEntity* player2 = new PlayerEntity(0);
 	playerList.push_back(player2);
-	PlayerEntity* player3 = new PlayerEntity();
+	PlayerEntity* player3 = new PlayerEntity(0);
 	playerList.push_back(player3);
-	PlayerEntity* player4 = new PlayerEntity();
+	PlayerEntity* player4 = new PlayerEntity(0);
 	playerList.push_back(player4);
 	std::vector<MobEntity*> mobList;
-	MobEntity* mob1 = new MobEntity();
+	MobEntity* mob1 = new MobEntity(0);
 	mobList.push_back(mob1);
-	MobEntity* mob2 = new MobEntity();
+	MobEntity* mob2 = new MobEntity(0);
 	mobList.push_back(mob2);
-	MobEntity* mob3 = new MobEntity();
+	MobEntity* mob3 = new MobEntity(0);
 	mobList.push_back(mob3);
-	MobEntity* mob4 = new MobEntity();
+	MobEntity* mob4 = new MobEntity(0);
 	mobList.push_back(mob4);
-	MobEntity* mob5 = new MobEntity();
+	MobEntity* mob5 = new MobEntity(0);
 	mobList.push_back(mob5);
 	gGameMode.add("battle", new BattleState(playerList, mobList));
 	gGameMode.push("mainmenu");
 	gGameMode.onEnter();
-
-	//sf::Texture mmbg;
-	//mmbg.loadFromFile("ui/mainmenubg.png");
-	//sf::Sprite mainMenuBG;
-	//mainMenuBG.setTexture(mmbg);
-	//sf::RectangleShape pauseScreen(sf::Vector2f(1600, 900));
-	//pauseScreen.setFillColor(sf::Color(0, 0, 0, 0));
-
-	//Player* player = new Player(0, 0, 2, 8, "char/standing2.png");
-
-	/*sf::Texture level;
-	level.loadFromFile("maps/winterdawn.png");
-	sf::Sprite currLevel;
-	currLevel.setTexture(level);
-	currLevel.setScale(sf::Vector2f(12, 12));
-	std::vector<int> walkmask = readBMP("maps/winterdawnwm.bmp");
-	int currLevelWidth = 663;*/
-	/*for (int i = 0; i < walkmask.size(); ++i)
-	{
-		if (i % 20 == 0)
-		{
-			std::cout << "\n";
-		}
-		std::cout << walkmask[i];
-	}*/
 
 	int width = 1600;
 	int height = 900;
@@ -162,18 +136,6 @@ int main()
 	bool isFall = false;
 	int fallFrame = 0;
 
-	//std::vector<Button*> buttonList;
-	//Button* startButton = new Button(0, 600, 525, 400, 42, "ui/startbutton.png");
-	//startButton->setIsClickable(true);
-	//buttonList.push_back(startButton);
-	//Button* menuButton = new Button(1, 1521, 0, 79, 31, "ui/menubutton.png");
-	//menuButton->hide();
-	//buttonList.push_back(menuButton);
-	//Button* backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
-	//backButton->hide();
-	//buttonList.push_back(backButton);
-
-	//spawnIn(300, 50, currLevel, level, walkmask, "maps/winterdawnwm.bmp", player);
 	while (window->isOpen())
 	{
 		sf::Event event;
@@ -204,13 +166,6 @@ int main()
 					gGameMode.pop();
 					gGameMode.onEnter();
 				}
-				break;
-
-			case 2: // menu
-				if (prevMenu == 1) { // from localmap
-					gGameMode.push("menu");
-					gGameMode.onEnter();
-				}
 				else if (prevMenu == 3) { // from battle
 					gGameMode.onExit();
 					gGameMode.pop();
@@ -218,9 +173,17 @@ int main()
 				}
 				break;
 
+			case 2: // menu
+				if (prevMenu == 1) { // from localmap
+					gGameMode.push("menu");
+					gGameMode.onEnter();
+				}
+				break;
+
 			case 3: // battle
 				if (prevMenu == 1) { // from localmap
 					mobList = gGameMode.onExitToBattle();
+					gGameMode.remove("battle");
 					gGameMode.add("battle", new BattleState(playerList, mobList));
 					gGameMode.push("battle");
 					gGameMode.onEnter();
@@ -235,19 +198,6 @@ int main()
 
 		while (window->pollEvent(event))
 		{
-			//sf::Vector2i localPosition = sf::Mouse::getPosition(*window);
-			/*for (unsigned int i = 0; i < buttonList.size(); ++i)
-			{
-				if (buttonList[i]->getIsClickable() && buttonList[i]->testIsClicked(localPosition.x, localPosition.y))
-				{
-					buttonList[i]->showGlow(true);
-				}
-				else
-				{
-					buttonList[i]->showGlow(false);
-				}
-			}*/
-
 			switch (event.type)
 			{
 			case sf::Event::Closed:
@@ -302,162 +252,7 @@ int main()
 			}
 		}
 
-		// Check for clicked button
-		/*for (unsigned int i = 0; i < buttonList.size(); ++i)
-		{
-			if (buttonList[i]->getIsClicked())
-			{
-				int clickedID = buttonList[i]->getID();
-				switch (clickedID)
-				{
-				case 0:
-					menu = 1;
-					buttonList[i]->setIsClickable(false);
-					buttonList[i]->hide();
-					buttonList[1]->setIsClickable(true);
-					buttonList[1]->show();
-					//mainMenuBG.setColor(sf::Color(255, 255, 255, 0));
-					break;
-
-				case 1:
-					menu = 2;
-					buttonList[i]->setIsClickable(false);
-					buttonList[2]->setIsClickable(true);
-					buttonList[2]->show();
-					pauseScreen.setFillColor(sf::Color(0, 0, 0, 127));
-					break;
-
-				case 2:
-					menu = 1;
-					buttonList[i]->setIsClickable(false);
-					buttonList[i]->hide();
-					buttonList[1]->setIsClickable(true);
-					pauseScreen.setFillColor(sf::Color(0, 0, 0, 0));
-					break;
-
-				default:
-					break;
-				}
-			}
-		}*/
-
-		/*if (menu == 1)
-		{
-			// Player movement
-			if (!isJump)
-			{
-				isFall = player->down(walkmask, currLevel, currLevelWidth);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-				player->right(walkmask, currLevel, currLevelWidth);
-				if (currFrame <= 5)
-				{
-
-				}
-				else if (currFrame <= 10)
-				{
-
-				}
-				else if (currFrame <= 15)
-				{
-
-				}
-				else if (currFrame <= 20)
-				{
-
-				}
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-					sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
-				{
-					if (!isJump)
-					{
-						isJump = true;
-					}
-				}
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				player->left(walkmask, currLevel, currLevelWidth);
-				if (currFrame <= 10)
-				{
-
-				}
-				else if (currFrame <= 20)
-				{
-
-				}
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-					sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
-				{
-					if (!isJump)
-					{
-						isJump = true;
-					}
-				}
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
-				sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !isFall)
-			{
-				if (!isJump)
-				{
-					isJump = true;
-				}
-			}
-
-			// Jump
-			if (isJump)
-			{
-				if (jumpFrame < 2)
-				{
-					++jumpFrame;
-					player->jump(walkmask, currLevel, currLevelWidth);
-					player->jump(walkmask, currLevel, currLevelWidth);
-					player->jump(walkmask, currLevel, currLevelWidth);
-				}
-				else if (jumpFrame < 4)
-				{
-					++jumpFrame;
-					player->jump(walkmask, currLevel, currLevelWidth);
-				}
-				else if (jumpFrame < 10)
-				{
-					++jumpFrame;
-				}
-				else
-				{
-					isJump = false;
-					isFall = player->down(walkmask, currLevel, currLevelWidth);
-					jumpFrame = 0;
-				}
-			}
-			if (!isFall)
-			{
-				fallFrame = 0;
-			}
-			if (isFall)
-			{
-				if (fallFrame > 8)
-				{
-					isFall = player->down(walkmask, currLevel, currLevelWidth);
-				}
-				else
-				{
-					++fallFrame;
-				}
-			}
-		}*/
-
-		//window->clear(sf::Color::Black);
 		gGameMode.render(window);
-		//window->draw(currLevel);
-		//window->draw(player->getSprite());
-		//window->draw(pauseScreen);
-		//window->draw(mainMenuBG);
-		//for (unsigned int i = 0; i < buttonList.size(); ++i)
-		//{
-		//	window->draw(buttonList[i]->getSprite());
-		//}
 		window->display();
 		++currFrame;
 		if (currFrame > 30)

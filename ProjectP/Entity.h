@@ -11,6 +11,7 @@ public:
 	sf::Sprite sprites;
 	sf::Vector2f position;
 	std::map<std::string, int> statuses;
+	int id;
 	int hp;
 	int mp;
 	int limit;
@@ -30,6 +31,8 @@ public:
 	virtual void setSpriteStage(int value) = 0;
 	virtual void setStatus(std::string type, int value) = 0;
 	virtual int getStatus(std::string type) = 0;
+	virtual void setID(int value) = 0;
+	virtual int getID() = 0;
 	virtual void setHP(int value) = 0;
 	virtual int getHP() = 0;
 	virtual void setMP(int value) = 0;
@@ -58,6 +61,7 @@ public:
 		sprites.setTexture(sheet);
 		position.x = 0;
 		position.y = 0;
+		id = -1;
 		hp = 100;
 		mp = 100;
 		limit = 0;
@@ -67,6 +71,61 @@ public:
 		mdef = 10;
 		speed = 10;
 		frontRow = true;
+	}
+
+	PlayerEntity(int value) {
+		switch (value) {
+		case 0:
+			sheet.loadFromFile("sprites/empty.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = 0;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+
+		case -1:
+			sheet.loadFromFile("char/standing2.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = -1;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+
+		default:
+			sheet.loadFromFile("sprites/empty.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = 0;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+		}
 	}
 
 	void setOrigin(sf::Vector2f pos) {
@@ -97,6 +156,14 @@ public:
 
 	int getStatus(std::string type) {
 		return statuses[type];
+	}
+
+	void setID(int value) {
+		id = value;
+	}
+
+	int getID() {
+		return id;
 	}
 
 	void setHP(int value) {
@@ -181,10 +248,11 @@ class MobEntity : public Entity
 {
 public:
 	MobEntity() {
-		sheet.loadFromFile("sprites/mob0.png");
+		sheet.loadFromFile("sprites/empty.png");
 		sprites.setTexture(sheet);
 		position.x = 0;
 		position.y = 0;
+		id = 0;
 		hp = 100;
 		mp = 100;
 		limit = 0;
@@ -194,6 +262,61 @@ public:
 		mdef = 10;
 		speed = 10;
 		frontRow = true;
+	}
+
+	MobEntity(int value) {
+		switch (value) {
+		case 0:
+			sheet.loadFromFile("sprites/empty.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = 0;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+
+		case 1:
+			sheet.loadFromFile("sprites/mob0.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = 1;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+
+		default:
+			sheet.loadFromFile("sprites/empty.png");
+			sprites.setTexture(sheet);
+			position.x = 0;
+			position.y = 0;
+			id = 0;
+			hp = 100;
+			mp = 100;
+			limit = 0;
+			atk = 10;
+			matk = 10;
+			def = 10;
+			mdef = 10;
+			speed = 10;
+			frontRow = true;
+			break;
+		}
 	}
 
 	void setOrigin(sf::Vector2f pos) {
@@ -224,6 +347,14 @@ public:
 
 	int getStatus(std::string type) {
 		return statuses[type];
+	}
+
+	void setID(int value) {
+		id = value;
+	}
+
+	int getID() {
+		return id;
 	}
 
 	void setHP(int value) {

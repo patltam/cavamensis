@@ -61,11 +61,11 @@ public:
 		hbtly = 30;
 		hbWidth = 46;
 		hbHeight = 86;
-		mob1 = new MobEntity();
-		mob2 = new MobEntity();
-		mob3 = new MobEntity();
-		mob4 = new MobEntity();
-		mob5 = new MobEntity();
+		mob1 = new MobEntity(0);
+		mob2 = new MobEntity(0);
+		mob3 = new MobEntity(1);
+		mob4 = new MobEntity(0);
+		mob5 = new MobEntity(0);
 		mobList.push_back(mob1);
 		mobList.push_back(mob2);
 		mobList.push_back(mob3);

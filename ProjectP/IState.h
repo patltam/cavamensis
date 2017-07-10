@@ -178,6 +178,7 @@ private:
 	bool collideY2;
 	bool collideY3;
 	bool collideY4;
+	int collideID;
 
 public:
 	MapState() {
@@ -199,8 +200,9 @@ public:
 		currLevelWidth = 700;
 		spawnIn(175, 200, currLevel, level, walkmask, "maps/veternawm.bmp", player);
 		Mob0* dummy = new Mob0();
-		dummy->setPosition(sf::Vector2f(175, 200), player->getPosition());
+		dummy->setPosition(sf::Vector2f(300, 140), player->getPosition());
 		spawnedMobList.push_back(dummy);
+		collideID = 0;
 	}
 
 	std::vector<int> readBMP(char* filename)
@@ -476,6 +478,9 @@ public:
 			if (collideX1 || collideX2 || collideX3 || collideX4) {
 				if (collideY1 || collideY2 || collideY3 || collideY4) {
 					std::cout << "Collision!\n";
+					mobList = spawnedMobList[i]->getMobList();
+					collideID = i;
+					return 3;
 				}
 			}
 		}
@@ -583,10 +588,10 @@ public:
 	MenuState() {
 		backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
 		backButton->setIsClickable(true);
-		battleButton = new Button(3, 1521, 30, 79, 31, "ui/battlebutton.png");
-		battleButton->setIsClickable(true);
+		//battleButton = new Button(3, 1521, 30, 79, 31, "ui/battlebutton.png");
+		//battleButton->setIsClickable(true);
 		buttonList.push_back(backButton); // ID = 2
-		buttonList.push_back(battleButton); // ID = 3
+		//buttonList.push_back(battleButton); // ID = 3
 		menubgt.loadFromFile("ui/menubgtest.png");
 		menubg.setTexture(menubgt);
 	}
@@ -740,9 +745,9 @@ public:
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
 		mEntities.push_back(mobEnt5);
 
-		backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
-		backButton->setIsClickable(true);
-		buttonList.push_back(backButton); // ID = 2
+		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
+		//backButton->setIsClickable(true);
+		//buttonList.push_back(backButton); // ID = 2
 		bgt.loadFromFile("battlebg/bg0.png");
 		bg.setTexture(bgt);
 		battleMenut.loadFromFile("ui/battlemenu.png");
@@ -792,9 +797,9 @@ public:
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
 		mEntities.push_back(mobEnt5);
 
-		backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
-		backButton->setIsClickable(true);
-		buttonList.push_back(backButton); // ID = 2
+		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
+		//backButton->setIsClickable(true);
+		//buttonList.push_back(backButton); // ID = 2
 		bgt.loadFromFile("battlebg/bg0.png");
 		bg.setTexture(bgt);
 		battleMenut.loadFromFile("ui/battlemenu.png");
