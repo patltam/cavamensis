@@ -1,13 +1,27 @@
 #include "stdafx.h"
 #include "Button.h"
 #include "Player.h"
-#include "Action.h"
-#include "Entity.h"
+#include "Decision.cpp"
 #include "Mob.h"
 #include <string>
 #include <iostream>
 #include <vector>
+#include <set>
 #include <SFML/Graphics.hpp>
+
+struct OrderByATB {
+	bool operator()(Entity* lhs, Entity* rhs) {
+		if (lhs->getATB() != rhs->getATB()) {
+			return lhs->getATB() < rhs->getATB();
+		}
+		else if (lhs->getSpeed() != rhs->getSpeed()) {
+			return lhs->getSpeed() < rhs->getSpeed();
+		}
+		else {
+			return true;
+		}
+	}
+};
 
 class IState
 {
@@ -683,8 +697,8 @@ public:
 class BattleState : public IState
 {
 private:
-	std::vector<Action> mActions;
-	std::vector<Entity*> mEntities;
+	Action* currAction;
+	std::set<Entity*, OrderByATB> entities;
 	PlayerEntity* playerEnt1;
 	PlayerEntity* playerEnt2;
 	PlayerEntity* playerEnt3;
@@ -700,50 +714,56 @@ private:
 	sf::Sprite bg;
 	sf::Texture battleMenut;
 	sf::Sprite battleMenu;
+	std::vector<PlayerEntity*> playerList;
 	std::vector<MobEntity*> mobList;
+	bool multFullATB;
+	int fullATBCount;
+	bool playerChoice;
+	bool animate;
+	Decision* decider;
 
 public:
 	BattleState() {
-		mActions = std::vector<Action>();
-		mEntities = std::vector<Entity*>();
+		currAction = new MobAttack();
+		entities = std::set<Entity*, OrderByATB>();
 
 		playerEnt1 = new PlayerEntity();
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
 		playerEnt1->setPosition(sf::Vector2f(450, 298));
-		mEntities.push_back(playerEnt1);
+		entities.insert(playerEnt1);
 		playerEnt2 = new PlayerEntity();
 		playerEnt2->setOrigin(sf::Vector2f(0, 148));
 		playerEnt2->setPosition(sf::Vector2f(430, 398));
-		mEntities.push_back(playerEnt2);
+		entities.insert(playerEnt2);
 		playerEnt3 = new PlayerEntity();
 		playerEnt3->setOrigin(sf::Vector2f(0, 148));
 		playerEnt3->setPosition(sf::Vector2f(410, 498));
-		mEntities.push_back(playerEnt3);
+		entities.insert(playerEnt3);
 		playerEnt4 = new PlayerEntity();
 		playerEnt4->setOrigin(sf::Vector2f(0, 148));
 		playerEnt4->setPosition(sf::Vector2f(390, 598));
-		mEntities.push_back(playerEnt4);
+		entities.insert(playerEnt4);
 
 		mobEnt1 = new MobEntity();
 		mobEnt1->setOrigin(sf::Vector2f(0, 100));
 		mobEnt1->setPosition(sf::Vector2f(1100, 248));
-		mEntities.push_back(mobEnt1);
+		entities.insert(mobEnt1);
 		mobEnt2 = new MobEntity();
 		mobEnt2->setOrigin(sf::Vector2f(0, 100));
 		mobEnt2->setPosition(sf::Vector2f(1120, 338));
-		mEntities.push_back(mobEnt2);
+		entities.insert(mobEnt2);
 		mobEnt3 = new MobEntity();
 		mobEnt3->setOrigin(sf::Vector2f(0, 100));
 		mobEnt3->setPosition(sf::Vector2f(1140, 428));
-		mEntities.push_back(mobEnt3);
+		entities.insert(mobEnt3);
 		mobEnt4 = new MobEntity();
 		mobEnt4->setOrigin(sf::Vector2f(0, 100));
 		mobEnt4->setPosition(sf::Vector2f(1160, 518));
-		mEntities.push_back(mobEnt4);
+		entities.insert(mobEnt4);
 		mobEnt5 = new MobEntity();
 		mobEnt5->setOrigin(sf::Vector2f(0, 100));
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
-		mEntities.push_back(mobEnt5);
+		entities.insert(mobEnt5);
 
 		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
 		//backButton->setIsClickable(true);
@@ -753,49 +773,63 @@ public:
 		battleMenut.loadFromFile("ui/battlemenu.png");
 		battleMenu.setTexture(battleMenut);
 		battleMenu.setPosition(sf::Vector2f(0, 600));
+
+		multFullATB = false;
+		fullATBCount = 0;
+		playerChoice = false;
+		animate = false;
 	}
 
 	BattleState(std::vector<PlayerEntity*> playerList, std::vector<MobEntity*> mobList) {
-		mActions = std::vector<Action>();
-		mEntities = std::vector<Entity*>();
+		currAction = new MobAttack();
+		entities = std::set<Entity*, OrderByATB>();
 
 		playerEnt1 = playerList[0];
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
 		playerEnt1->setPosition(sf::Vector2f(450, 298));
-		mEntities.push_back(playerEnt1);
+		entities.insert(playerEnt1);
+		playerList.push_back(playerEnt1);
 		playerEnt2 = playerList[1];
 		playerEnt2->setOrigin(sf::Vector2f(0, 148));
 		playerEnt2->setPosition(sf::Vector2f(430, 398));
-		mEntities.push_back(playerEnt2);
+		entities.insert(playerEnt2);
+		playerList.push_back(playerEnt2);
 		playerEnt3 = playerList[2];
 		playerEnt3->setOrigin(sf::Vector2f(0, 148));
 		playerEnt3->setPosition(sf::Vector2f(410, 498));
-		mEntities.push_back(playerEnt3);
+		entities.insert(playerEnt3);
+		playerList.push_back(playerEnt3);
 		playerEnt4 = playerList[3];
 		playerEnt4->setOrigin(sf::Vector2f(0, 148));
 		playerEnt4->setPosition(sf::Vector2f(390, 598));
-		mEntities.push_back(playerEnt4);
+		entities.insert(playerEnt4);
+		playerList.push_back(playerEnt4);
 
 		mobEnt1 = mobList[0];
 		mobEnt1->setOrigin(sf::Vector2f(0, 100));
 		mobEnt1->setPosition(sf::Vector2f(1100, 248));
-		mEntities.push_back(mobEnt1);
+		entities.insert(mobEnt1);
+		mobList.push_back(mobEnt1);
 		mobEnt2 = mobList[1];
 		mobEnt2->setOrigin(sf::Vector2f(0, 100));
 		mobEnt2->setPosition(sf::Vector2f(1120, 338));
-		mEntities.push_back(mobEnt2);
+		entities.insert(mobEnt2);
+		mobList.push_back(mobEnt2);
 		mobEnt3 = mobList[2];
 		mobEnt3->setOrigin(sf::Vector2f(0, 100));
 		mobEnt3->setPosition(sf::Vector2f(1140, 428));
-		mEntities.push_back(mobEnt3);
+		entities.insert(mobEnt3);
+		mobList.push_back(mobEnt3);
 		mobEnt4 = mobList[3];
 		mobEnt4->setOrigin(sf::Vector2f(0, 100));
 		mobEnt4->setPosition(sf::Vector2f(1160, 518));
-		mEntities.push_back(mobEnt4);
+		entities.insert(mobEnt4);
+		mobList.push_back(mobEnt4);
 		mobEnt5 = mobList[4];
 		mobEnt5->setOrigin(sf::Vector2f(0, 100));
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
-		mEntities.push_back(mobEnt5);
+		entities.insert(mobEnt5);
+		mobList.push_back(mobEnt5);
 
 		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
 		//backButton->setIsClickable(true);
@@ -805,6 +839,12 @@ public:
 		battleMenut.loadFromFile("ui/battlemenu.png");
 		battleMenu.setTexture(battleMenut);
 		battleMenu.setPosition(sf::Vector2f(0, 600));
+
+		multFullATB = false;
+		fullATBCount = 0;
+		playerChoice = false;
+		animate = false;
+		decider = new Decision();
 	}
 
 	/*static bool sortByTime(Action a, Action b)
@@ -861,6 +901,59 @@ public:
 				}
 			}
 		}
+		// update ATB
+		if (!playerChoice && !animate && !multFullATB) {
+			int maxSpeed = 0;
+			for (std::set<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it) {
+				if ((*it)->getSpeed() > maxSpeed) {
+					maxSpeed = (*it)->getSpeed();
+				}
+			}
+			int mult = (10000 - (*entities.begin())->getATB() / maxSpeed) + 1;
+			for (unsigned int i = 0; i < playerList.size(); ++i) {
+				if (playerList[i]->getHP() > 0) {
+					playerList[i]->setATB(playerList[i]->getATB() + playerList[i]->getSpeed() * mult);
+					if (playerList[i]->getATB() >= 10000) {
+						++fullATBCount;
+					}
+				}
+			}
+			for (unsigned int i = 0; i < mobList.size(); ++i) {
+				if (mobList[i]->getHP() > 0) {
+					mobList[i]->setATB(mobList[i]->getATB() + mobList[i]->getSpeed() * mult);
+					if (mobList[i]->getATB() >= 10000) {
+						++fullATBCount;
+					}
+				}
+			}
+			if (fullATBCount > 1) {
+				multFullATB = true;
+			}
+		}
+		playerChoice = (*entities.begin())->getType();
+		// player turn
+		if (playerChoice && !animate) {
+
+		}
+		// mob turn
+		else if (!playerChoice && !animate) {
+			currAction = decider->getAction(*entities.begin(), playerList, mobList);
+			(*entities.begin())->setATB(0);
+			--fullATBCount;
+			if (fullATBCount <= 1) {
+				multFullATB = false;
+			}
+			animate = true;
+		}
+		else if (animate) {
+			currAction->setCounter(currAction->getCounter() + 1);
+			if ((currAction->getCounter()) == (currAction->getFinalCounter())) {
+				animate = false;
+				currAction->setCounter(0);
+				playerChoice = false;
+			}
+		}
+
 		return 3;
 	}
 	
@@ -882,28 +975,25 @@ public:
 		}
 	}
 
-	void render(sf::RenderWindow* window)
-	{
+	void render(sf::RenderWindow* window) {
 		window->draw(bg);
+		for (std::set<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it) {
+			window->draw((*it)->getSprite());
+		}
+		window->draw(battleMenu);
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			window->draw(buttonList[i]->getSprite());
 		}
-		for (unsigned int i = 0; i < mEntities.size(); ++i) {
-			window->draw(mEntities[i]->getSprite());
-		}
-		window->draw(battleMenu);
 	}
 
-	void onEnter()
-	{
+	void onEnter() {
 		bg.setColor(sf::Color(255, 255, 255, 255));
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			buttonList[i]->setIsClicked(false);
 		}
 	}
 
-	void onExit()
-	{
+	void onExit() {
 		bg.setColor(sf::Color(255, 255, 255, 0));
 		for (unsigned int i = 0; i < buttonList.size(); ++i) {
 			buttonList[i]->setIsClicked(false);
@@ -916,20 +1006,5 @@ public:
 			buttonList[i]->setIsClicked(false);
 		}
 		return mobList;
-	}
-
-	int getActive() {
-		int counter = 0;
-		for (unsigned int i = 0; i < mEntities.size(); ++i) {
-			if (mEntities[i]->getHP() > 0) {
-				++counter;
-			}
-		}
-		return counter;
-	}
-
-	std::vector<Entity*> sortBySpeed() {
-		int counter = 0;
-
 	}
 };

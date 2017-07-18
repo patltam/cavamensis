@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Entity.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,29 +8,38 @@
 class Action
 {
 public:
-	PlayerEntity* playerEnt1;
-	PlayerEntity* playerEnt2;
-	PlayerEntity* playerEnt3;
-	PlayerEntity* playerEnt4;
-	MobEntity* mobEnt1;
-	MobEntity* mobEnt2;
-	MobEntity* mobEnt3;
-	MobEntity* mobEnt4;
-	MobEntity* mobEnt5;
+	int currCounter;
+	int finalCounter;
 
 	Action() {}
 	virtual ~Action() {}
 	virtual void execute() = 0;
+	virtual void setCounter(int value) = 0;
+	virtual int getCounter() = 0;
+	virtual int getFinalCounter() = 0;
 };
 
 class MobAttack : public Action
 {
 public:
 	MobAttack() {
-
+		currCounter = 0;
+		finalCounter = 1;
 	}
 
 	void execute() {
 
+	}
+
+	void setCounter(int value) {
+		currCounter = value;
+	}
+
+	int getCounter() {
+		return currCounter;
+	}
+
+	int getFinalCounter() {
+		return finalCounter;
 	}
 };

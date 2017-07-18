@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Action.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,8 +12,11 @@ public:
 	sf::Sprite sprites;
 	sf::Vector2f position;
 	std::map<std::string, int> statuses;
+	std::vector<Action*> actionList;
 	int id;
+	int maxHP;
 	int hp;
+	int maxMP;
 	int mp;
 	int limit;
 	int atk;
@@ -20,6 +24,7 @@ public:
 	int def;
 	int mdef;
 	int speed;
+	int atb;
 	bool frontRow;
 
 	Entity() {}
@@ -33,8 +38,12 @@ public:
 	virtual int getStatus(std::string type) = 0;
 	virtual void setID(int value) = 0;
 	virtual int getID() = 0;
+	virtual void setMaxHP(int value) = 0;
+	virtual int getMaxHP() = 0;
 	virtual void setHP(int value) = 0;
 	virtual int getHP() = 0;
+	virtual void setMaxMP(int value) = 0;
+	virtual int getMaxMP() = 0;
 	virtual void setMP(int value) = 0;
 	virtual int getMP() = 0;
 	virtual void setLimit(int value) = 0;
@@ -49,8 +58,12 @@ public:
 	virtual int getMdef() = 0;
 	virtual void setSpeed(int value) = 0;
 	virtual int getSpeed() = 0;
+	virtual void setATB(int value) = 0;
+	virtual int getATB() = 0;
 	virtual void setFrontRow(int value) = 0;
 	virtual bool getFrontRow() = 0;
+	virtual bool getType() = 0;
+	virtual std::vector<Action*> getAction() = 0;
 };
 
 class PlayerEntity : public Entity
@@ -62,7 +75,9 @@ public:
 		position.x = 0;
 		position.y = 0;
 		id = -1;
+		maxHP = 100;
 		hp = 100;
+		maxMP = 100;
 		mp = 100;
 		limit = 0;
 		atk = 10;
@@ -70,6 +85,7 @@ public:
 		def = 10;
 		mdef = 10;
 		speed = 10;
+		atb = speed;
 		frontRow = true;
 	}
 
@@ -81,7 +97,9 @@ public:
 			position.x = 0;
 			position.y = 0;
 			id = 0;
-			hp = 100;
+			maxHP = 0;
+			hp = 0;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -89,6 +107,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 
@@ -98,7 +117,9 @@ public:
 			position.x = 0;
 			position.y = 0;
 			id = -1;
+			maxHP = 100;
 			hp = 100;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -106,6 +127,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 
@@ -115,7 +137,9 @@ public:
 			position.x = 0;
 			position.y = 0;
 			id = 0;
-			hp = 100;
+			maxHP = 0;
+			hp = 0;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -123,6 +147,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 		}
@@ -166,12 +191,28 @@ public:
 		return id;
 	}
 
+	void setMaxHP(int value) {
+		maxHP = value;
+	}
+
+	int getMaxHP() {
+		return maxHP;
+	}
+
 	void setHP(int value) {
 		hp = value;
 	}
 
 	int getHP() {
 		return hp;
+	}
+
+	void setMaxMP(int value) {
+		maxMP = value;
+	}
+
+	int getMaxMP() {
+		return maxMP;
 	}
 
 	void setMP(int value) {
@@ -227,7 +268,25 @@ public:
 	}
 
 	int getSpeed() {
-		return speed;
+		if (hp > 0) {
+			return speed;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	void setATB(int value) {
+		atb = value;
+	}
+
+	int getATB() {
+		if (hp > 0) {
+			return atb;
+		}
+		else {
+			return 0;
+		}
 	}
 
 	void setFrontRow(int value) {
@@ -241,6 +300,14 @@ public:
 
 	bool getFrontRow() {
 		return frontRow;
+	}
+
+	bool getType() {
+		return true;
+	}
+
+	std::vector<Action*> getAction() {
+		return actionList;
 	}
 };
 
@@ -253,7 +320,9 @@ public:
 		position.x = 0;
 		position.y = 0;
 		id = 0;
-		hp = 100;
+		maxHP = 0;
+		hp = 0;
+		maxMP = 100;
 		mp = 100;
 		limit = 0;
 		atk = 10;
@@ -261,6 +330,7 @@ public:
 		def = 10;
 		mdef = 10;
 		speed = 10;
+		atb = speed;
 		frontRow = true;
 	}
 
@@ -271,8 +341,11 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new MobAttack());
 			id = 0;
-			hp = 100;
+			maxHP = 0;
+			hp = 0;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -280,6 +353,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 
@@ -288,8 +362,11 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new MobAttack());
 			id = 1;
+			maxHP = 100;
 			hp = 100;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -297,6 +374,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 
@@ -305,8 +383,11 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new MobAttack());
 			id = 0;
-			hp = 100;
+			maxHP = 0;
+			hp = 0;
+			maxMP = 100;
 			mp = 100;
 			limit = 0;
 			atk = 10;
@@ -314,6 +395,7 @@ public:
 			def = 10;
 			mdef = 10;
 			speed = 10;
+			atb = speed;
 			frontRow = true;
 			break;
 		}
@@ -357,12 +439,28 @@ public:
 		return id;
 	}
 
+	void setMaxHP(int value) {
+		maxHP = value;
+	}
+
+	int getMaxHP() {
+		return maxHP;
+	}
+
 	void setHP(int value) {
 		hp = value;
 	}
 
 	int getHP() {
 		return hp;
+	}
+
+	void setMaxMP(int value) {
+		maxMP = value;
+	}
+
+	int getMaxMP() {
+		return maxMP;
 	}
 
 	void setMP(int value) {
@@ -418,7 +516,25 @@ public:
 	}
 
 	int getSpeed() {
-		return speed;
+		if (hp > 0) {
+			return speed;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	void setATB(int value) {
+		atb = value;
+	}
+
+	int getATB() {
+		if (hp > 0) {
+			return atb;
+		}
+		else {
+			return 0;
+		}
 	}
 
 	void setFrontRow(int value) {
@@ -432,5 +548,13 @@ public:
 
 	bool getFrontRow() {
 		return frontRow;
+	}
+
+	bool getType() {
+		return false;
+	}
+
+	std::vector<Action*> getAction() {
+		return actionList;
 	}
 };

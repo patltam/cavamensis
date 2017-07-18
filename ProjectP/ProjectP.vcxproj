@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Decision.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProjectP.cpp" />
     <ClCompile Include="StateStack.cpp" />
