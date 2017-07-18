@@ -373,7 +373,7 @@ public:
 			matk = 10;
 			def = 10;
 			mdef = 10;
-			speed = 10;
+			speed = 25;
 			atb = speed;
 			frontRow = true;
 			break;

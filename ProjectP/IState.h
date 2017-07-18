@@ -10,16 +10,22 @@
 #include <SFML/Graphics.hpp>
 
 struct OrderByATB {
-	bool operator()(Entity* lhs, Entity* rhs) {
+	bool operator()(Entity* lhs, Entity* rhs) const {
 		if (lhs->getATB() != rhs->getATB()) {
-			return lhs->getATB() < rhs->getATB();
+			return lhs->getATB() > rhs->getATB();
 		}
 		else if (lhs->getSpeed() != rhs->getSpeed()) {
-			return lhs->getSpeed() < rhs->getSpeed();
+			return lhs->getSpeed() > rhs->getSpeed();
 		}
 		else {
 			return true;
 		}
+	}
+};
+
+struct NoOrder {
+	bool operator()(Entity* lhs, Entity* rhs) const {
+		return true;
 	}
 };
 
@@ -699,6 +705,7 @@ class BattleState : public IState
 private:
 	Action* currAction;
 	std::set<Entity*, OrderByATB> entities;
+	std::set<Entity*, NoOrder> entitiesList;
 	PlayerEntity* playerEnt1;
 	PlayerEntity* playerEnt2;
 	PlayerEntity* playerEnt3;
@@ -721,49 +728,61 @@ private:
 	bool playerChoice;
 	bool animate;
 	Decision* decider;
+	Entity* caster;
 
 public:
 	BattleState() {
 		currAction = new MobAttack();
 		entities = std::set<Entity*, OrderByATB>();
 
+		playerList.clear();
 		playerEnt1 = new PlayerEntity();
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
 		playerEnt1->setPosition(sf::Vector2f(450, 298));
 		entities.insert(playerEnt1);
+		playerList.push_back(playerEnt1);
 		playerEnt2 = new PlayerEntity();
 		playerEnt2->setOrigin(sf::Vector2f(0, 148));
 		playerEnt2->setPosition(sf::Vector2f(430, 398));
 		entities.insert(playerEnt2);
+		playerList.push_back(playerEnt2);
 		playerEnt3 = new PlayerEntity();
 		playerEnt3->setOrigin(sf::Vector2f(0, 148));
 		playerEnt3->setPosition(sf::Vector2f(410, 498));
 		entities.insert(playerEnt3);
+		playerList.push_back(playerEnt3);
 		playerEnt4 = new PlayerEntity();
 		playerEnt4->setOrigin(sf::Vector2f(0, 148));
 		playerEnt4->setPosition(sf::Vector2f(390, 598));
 		entities.insert(playerEnt4);
+		playerList.push_back(playerEnt4);
 
+		mobList.clear();
 		mobEnt1 = new MobEntity();
 		mobEnt1->setOrigin(sf::Vector2f(0, 100));
 		mobEnt1->setPosition(sf::Vector2f(1100, 248));
 		entities.insert(mobEnt1);
+		mobList.push_back(mobEnt1);
 		mobEnt2 = new MobEntity();
 		mobEnt2->setOrigin(sf::Vector2f(0, 100));
 		mobEnt2->setPosition(sf::Vector2f(1120, 338));
 		entities.insert(mobEnt2);
+		mobList.push_back(mobEnt2);
 		mobEnt3 = new MobEntity();
 		mobEnt3->setOrigin(sf::Vector2f(0, 100));
 		mobEnt3->setPosition(sf::Vector2f(1140, 428));
 		entities.insert(mobEnt3);
+		mobList.push_back(mobEnt3);
 		mobEnt4 = new MobEntity();
 		mobEnt4->setOrigin(sf::Vector2f(0, 100));
 		mobEnt4->setPosition(sf::Vector2f(1160, 518));
 		entities.insert(mobEnt4);
+		mobList.push_back(mobEnt4);
 		mobEnt5 = new MobEntity();
 		mobEnt5->setOrigin(sf::Vector2f(0, 100));
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
 		entities.insert(mobEnt5);
+		mobList.push_back(mobEnt5);
 
 		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
 		//backButton->setIsClickable(true);
@@ -784,51 +803,62 @@ public:
 		currAction = new MobAttack();
 		entities = std::set<Entity*, OrderByATB>();
 
+		playerList.clear();
 		playerEnt1 = playerList[0];
 		playerEnt1->setOrigin(sf::Vector2f(0, 148));
 		playerEnt1->setPosition(sf::Vector2f(450, 298));
 		entities.insert(playerEnt1);
+		entitiesList.insert(playerEnt1);
 		playerList.push_back(playerEnt1);
 		playerEnt2 = playerList[1];
 		playerEnt2->setOrigin(sf::Vector2f(0, 148));
 		playerEnt2->setPosition(sf::Vector2f(430, 398));
 		entities.insert(playerEnt2);
+		entitiesList.insert(playerEnt2);
 		playerList.push_back(playerEnt2);
 		playerEnt3 = playerList[2];
 		playerEnt3->setOrigin(sf::Vector2f(0, 148));
 		playerEnt3->setPosition(sf::Vector2f(410, 498));
 		entities.insert(playerEnt3);
+		entitiesList.insert(playerEnt3);
 		playerList.push_back(playerEnt3);
 		playerEnt4 = playerList[3];
 		playerEnt4->setOrigin(sf::Vector2f(0, 148));
 		playerEnt4->setPosition(sf::Vector2f(390, 598));
 		entities.insert(playerEnt4);
+		entitiesList.insert(playerEnt4);
 		playerList.push_back(playerEnt4);
 
+		mobList.clear();
 		mobEnt1 = mobList[0];
 		mobEnt1->setOrigin(sf::Vector2f(0, 100));
 		mobEnt1->setPosition(sf::Vector2f(1100, 248));
 		entities.insert(mobEnt1);
+		entitiesList.insert(mobEnt1);
 		mobList.push_back(mobEnt1);
 		mobEnt2 = mobList[1];
 		mobEnt2->setOrigin(sf::Vector2f(0, 100));
 		mobEnt2->setPosition(sf::Vector2f(1120, 338));
 		entities.insert(mobEnt2);
+		entitiesList.insert(mobEnt2);
 		mobList.push_back(mobEnt2);
 		mobEnt3 = mobList[2];
 		mobEnt3->setOrigin(sf::Vector2f(0, 100));
 		mobEnt3->setPosition(sf::Vector2f(1140, 428));
 		entities.insert(mobEnt3);
+		entitiesList.insert(mobEnt3);
 		mobList.push_back(mobEnt3);
 		mobEnt4 = mobList[3];
 		mobEnt4->setOrigin(sf::Vector2f(0, 100));
 		mobEnt4->setPosition(sf::Vector2f(1160, 518));
 		entities.insert(mobEnt4);
+		entitiesList.insert(mobEnt4);
 		mobList.push_back(mobEnt4);
 		mobEnt5 = mobList[4];
 		mobEnt5->setOrigin(sf::Vector2f(0, 100));
 		mobEnt5->setPosition(sf::Vector2f(1180, 608));
 		entities.insert(mobEnt5);
+		entitiesList.insert(mobEnt5);
 		mobList.push_back(mobEnt5);
 
 		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
@@ -909,23 +939,34 @@ public:
 					maxSpeed = (*it)->getSpeed();
 				}
 			}
-			int mult = (10000 - (*entities.begin())->getATB() / maxSpeed) + 1;
-			for (unsigned int i = 0; i < playerList.size(); ++i) {
-				if (playerList[i]->getHP() > 0) {
-					playerList[i]->setATB(playerList[i]->getATB() + playerList[i]->getSpeed() * mult);
-					if (playerList[i]->getATB() >= 10000) {
+			//std::cout << maxSpeed << "\n";
+			//std::cout << (*entities.begin())->getSpeed() << "\n";
+			int mult = ((10000 - (*entities.begin())->getATB()) / maxSpeed) + 1;
+			//std::cout << mult << "\n";
+			//std::cout << entitiesList.size() << "\n";
+			for (unsigned int i = 0; i < 9; ++i) {
+				entities.erase(entities.begin());
+			}
+			for (std::set<Entity*>::iterator it = entitiesList.begin(); it != entitiesList.end(); ++it) {
+				//std::cout << playerList[i]->getHP() << "\n";
+				if ((*it)->getHP() > 0) {
+					(*it)->setATB((*it)->getATB() + (*it)->getSpeed() * mult);
+					if ((*it)->getATB() >= 10000) {
 						++fullATBCount;
 					}
+					entities.insert(*it);
+					std::cout << (*it)->getATB() << "\n";
 				}
 			}
-			for (unsigned int i = 0; i < mobList.size(); ++i) {
+			/*for (unsigned int i = 0; i < mobList.size(); ++i) {
 				if (mobList[i]->getHP() > 0) {
 					mobList[i]->setATB(mobList[i]->getATB() + mobList[i]->getSpeed() * mult);
 					if (mobList[i]->getATB() >= 10000) {
 						++fullATBCount;
 					}
+					//std::cout << mobList[i]->getATB() << "\n";
 				}
-			}
+			}*/
 			if (fullATBCount > 1) {
 				multFullATB = true;
 			}
@@ -933,14 +974,16 @@ public:
 		playerChoice = (*entities.begin())->getType();
 		// player turn
 		if (playerChoice && !animate) {
-
+			
 		}
 		// mob turn
 		else if (!playerChoice && !animate) {
-			currAction = decider->getAction(*entities.begin(), playerList, mobList);
-			(*entities.begin())->setATB(0);
+			std::cout << "Mob turn\n";
+			caster = *entities.begin();
+			currAction = decider->getAction(caster, playerList, mobList);
+			caster->setATB(0);
 			--fullATBCount;
-			if (fullATBCount <= 1) {
+			if (fullATBCount < 1) {
 				multFullATB = false;
 			}
 			animate = true;

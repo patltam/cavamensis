@@ -24,7 +24,7 @@ class MobAttack : public Action
 public:
 	MobAttack() {
 		currCounter = 0;
-		finalCounter = 1;
+		finalCounter = 31;
 	}
 
 	void execute() {
