@@ -19,6 +19,31 @@ public:
 	virtual int getFinalCounter() = 0;
 };
 
+class PlayerAttack : public Action
+{
+public:
+	PlayerAttack() {
+		currCounter = 0;
+		finalCounter = 31;
+	}
+
+	void execute() {
+
+	}
+
+	void setCounter(int value) {
+		currCounter = value;
+	}
+
+	int getCounter() {
+		return currCounter;
+	}
+
+	int getFinalCounter() {
+		return finalCounter;
+	}
+};
+
 class MobAttack : public Action
 {
 public:

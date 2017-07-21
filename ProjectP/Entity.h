@@ -96,6 +96,7 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new PlayerAttack());
 			id = 0;
 			maxHP = 0;
 			hp = 0;
@@ -116,6 +117,7 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new PlayerAttack());
 			id = -1;
 			maxHP = 100;
 			hp = 100;
@@ -136,6 +138,7 @@ public:
 			sprites.setTexture(sheet);
 			position.x = 0;
 			position.y = 0;
+			actionList.push_back(new PlayerAttack());
 			id = 0;
 			maxHP = 0;
 			hp = 0;

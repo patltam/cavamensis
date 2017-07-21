@@ -717,6 +717,7 @@ private:
 	MobEntity* mobEnt5;
 	std::vector<Button*> buttonList;
 	Button* backButton;
+	Button* attackButton;
 	sf::Texture bgt;
 	sf::Sprite bg;
 	sf::Texture battleMenut;
@@ -864,6 +865,10 @@ public:
 		//backButton = new Button(2, 1521, 0, 79, 31, "ui/backbutton.png");
 		//backButton->setIsClickable(true);
 		//buttonList.push_back(backButton); // ID = 2
+		attackButton = new Button(3, 5, 605, 62, 19, "ui/attackbutton.png");
+		attackButton->setIsClickable(false);
+		attackButton->hide();
+		buttonList.push_back(attackButton); // ID = 3
 		bgt.loadFromFile("battlebg/bg0.png");
 		bg.setTexture(bgt);
 		battleMenut.loadFromFile("ui/battlemenu.png");
@@ -926,22 +931,46 @@ public:
 					return 2;
 					break;
 
+				case 3:
+					playerChoice = false;
+					caster = *entities.begin();
+					currAction = decider->getAction(caster, playerList, mobList);
+					caster->setATB(0);
+					std::cout << fullATBCount << "\n";
+					--fullATBCount;
+					if (fullATBCount < 1) {
+						multFullATB = false;
+					}
+					break;
+
 				default:
 					break;
 				}
 			}
 		}
 		// update ATB
+		for (unsigned int i = 0; i < 9; ++i) {
+			entities.erase(entities.begin());
+		}
+		for (std::set<Entity*>::iterator it = entitiesList.begin(); it != entitiesList.end(); ++it) {
+			entities.insert(*it);
+		}
 		if (!playerChoice && !animate && !multFullATB) {
 			int maxSpeed = 0;
+			int mult = 100000;
 			for (std::set<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it) {
-				if ((*it)->getSpeed() > maxSpeed) {
-					maxSpeed = (*it)->getSpeed();
+				if ((*it)->getHP() > 0) {
+					if ((*it)->getSpeed() > maxSpeed) {
+						maxSpeed = (*it)->getSpeed();
+					}
+					if ((10000 - (*it)->getATB()) / (*it)->getSpeed() < mult) {
+						mult = (10000 - (*it)->getATB()) / (*it)->getSpeed();
+					}
 				}
 			}
+			mult = mult + 1;
 			//std::cout << maxSpeed << "\n";
 			//std::cout << (*entities.begin())->getSpeed() << "\n";
-			int mult = ((10000 - (*entities.begin())->getATB()) / maxSpeed) + 1;
 			//std::cout << mult << "\n";
 			//std::cout << entitiesList.size() << "\n";
 			for (unsigned int i = 0; i < 9; ++i) {
@@ -954,9 +983,9 @@ public:
 					if ((*it)->getATB() >= 10000) {
 						++fullATBCount;
 					}
-					entities.insert(*it);
 					std::cout << (*it)->getATB() << "\n";
 				}
+				entities.insert(*it);
 			}
 			/*for (unsigned int i = 0; i < mobList.size(); ++i) {
 				if (mobList[i]->getHP() > 0) {
@@ -974,7 +1003,10 @@ public:
 		playerChoice = (*entities.begin())->getType();
 		// player turn
 		if (playerChoice && !animate) {
-			
+			for (unsigned int i = 0; i < buttonList.size(); ++i) {
+				buttonList[i]->setIsClickable(true);
+				buttonList[i]->show();
+			}
 		}
 		// mob turn
 		else if (!playerChoice && !animate) {
@@ -994,6 +1026,12 @@ public:
 				animate = false;
 				currAction->setCounter(0);
 				playerChoice = false;
+			}
+		}
+		if (!playerChoice) {
+			for (unsigned int i = 0; i < buttonList.size(); ++i) {
+				buttonList[i]->setIsClickable(false);
+				buttonList[i]->hide();
 			}
 		}
 
